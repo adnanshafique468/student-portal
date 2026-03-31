@@ -6,7 +6,7 @@ function Home() {
       <div className="container mx-auto px-4 py-16">
         <div className="text-center">
           <h1 className="text-5xl font-bold text-gray-800 mb-4">
-            Welcome to Student Portal
+            Welcome To Student Portal
           </h1>
           <p className="text-xl text-gray-600 mb-8">
             Manage students, attendance, and marks efficiently
