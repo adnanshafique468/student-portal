@@ -72,11 +72,11 @@ import { useEffect, useState } from 'react';
 import Navbar from './components/Navbar';
 import PrivateRoute from './components/PrivateRoute';
 import Home from './pages/Home';
-import Login from './pages/login';
-import Signup from './pages/signup';
+import Login from './pages/Login';
+import Signup from './pages/Signup';
 import StudentDashboard from './pages/StudentDashboard';
 import AdminDashboard from './pages/AdminDashboard';
-import Attendance from './pages/Attendence';
+import Attendance from './pages/Attendance';
 import Marks from './pages/Marks';
 
 function App() {
