@@ -791,3 +791,21 @@ export async function uploadFile(file, studentId, fileType) {
     throw error;
   }
 }
+// ============ LOGIN FUNCTION ============
+
+export async function loginUser(email) {
+  try {
+    const command = new ScanCommand({
+      TableName: STUDENTS_TABLE,
+      FilterExpression: "email = :email",
+      ExpressionAttributeValues: {
+        ":email": email
+      }
+    });
+    const response = await docClient.send(command);
+    return response.Items[0] || null;
+  } catch (error) {
+    console.error("Login error:", error);
+    return null;
+  }
+}

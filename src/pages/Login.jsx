@@ -1,20 +1,106 @@
+// import { useState } from 'react';
+// import { useNavigate, Link } from 'react-router-dom';
+
+// function Login() {
+//   const [email, setEmail] = useState('');
+//   const [password, setPassword] = useState('');
+//   const [error, setError] = useState('');
+//   const navigate = useNavigate();
+
+//   const handleSubmit = (e) => {
+//     e.preventDefault();
+//     // Simple demo login - in production, use proper auth
+//     if (email && password) {
+//       localStorage.setItem('user', JSON.stringify({ email }));
+//       navigate('/dashboard');
+//     } else {
+//       setError('Please enter email and password');
+//     }
+//   };
+
+//   return (
+//     <div className="min-h-screen flex items-center justify-center bg-gray-50">
+//       <div className="bg-white p-8 rounded-lg shadow-md w-96">
+//         <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
+//         {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
+//         <form onSubmit={handleSubmit}>
+//           <div className="mb-4">
+//             <label className="block text-gray-700 mb-2">Email</label>
+//             <input
+//               type="email"
+//               value={email}
+//               onChange={(e) => setEmail(e.target.value)}
+//               className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+//               required
+//             />
+//           </div>
+//           <div className="mb-6">
+//             <label className="block text-gray-700 mb-2">Password</label>
+//             <input
+//               type="password"
+//               value={password}
+//               onChange={(e) => setPassword(e.target.value)}
+//               className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+//               required
+//             />
+//           </div>
+//           <button
+//             type="submit"
+//             className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition"
+//           >
+//             Login
+//           </button>
+//         </form>
+//         <p className="mt-4 text-center text-gray-600">
+//           Don't have an account? <Link to="/signup" className="text-blue-600 hover:underline">Signup</Link>
+//         </p>
+//       </div>
+//     </div>
+//   );
+// }
+
+// export default Login;
+
+
 import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import { loginUser } from '../services/api';
 
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Simple demo login - in production, use proper auth
-    if (email && password) {
-      localStorage.setItem('user', JSON.stringify({ email }));
-      navigate('/dashboard');
-    } else {
-      setError('Please enter email and password');
+    setLoading(true);
+    setError('');
+    
+    try {
+      const user = await loginUser(email);
+      
+      if (user && user.password === password) {
+        localStorage.setItem('user', JSON.stringify({
+          id: user.studentId,
+          name: user.name,
+          email: user.email,
+          role: user.role || 'student'
+        }));
+        
+        if (user.role === 'admin') {
+          window.location.href = '/#/admin';
+        } else {
+          window.location.href = '/#/dashboard';
+        }
+      } else {
+        setError('Invalid email or password');
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      setError('Login failed. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -25,7 +111,7 @@ function Login() {
         {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label className="block text-gray-700 mb-2">Email</label>
+            <label className="block text-gray-700 mb-2">Email Address</label>
             <input
               type="email"
               value={email}
@@ -46,9 +132,10 @@ function Login() {
           </div>
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition"
+            disabled={loading}
+            className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition disabled:bg-gray-400"
           >
-            Login
+            {loading ? 'Logging in...' : 'Login'}
           </button>
         </form>
         <p className="mt-4 text-center text-gray-600">
